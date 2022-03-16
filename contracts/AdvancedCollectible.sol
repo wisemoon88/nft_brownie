@@ -38,7 +38,7 @@ contract AdvancedCollectible is ERC721, VRFConsumerBase {
     function createCollectible() public returns (bytes32) {
         bytes32 requestId = requestRandomness(keyhash, fee);
         requestIdToSender[requestId] = msg.sender; //this mapping is to store the address of the function caller to be used by fulfillrandomness
-        emit requestedCollectible(requestId, msg.sender);
+        emit requestedCollectible(requestId, msg.sender); // emit requestid and msg.sender after mapping updated
     }
 
     //need to define a fulfill randomness function which utilizes the randomness request.
@@ -50,9 +50,9 @@ contract AdvancedCollectible is ERC721, VRFConsumerBase {
         Breed breed = Breed(randomNumber % 3); //utilizing randomness to pick a random breed from the enum list
         uint256 newTokenId = tokenCounter;
         tokenIdToBreed[newTokenId] = breed; //mapping the tokenId to the breed
-        emit breedAssigned(newTokenId, breed);
-        address owner = requestIdToSender[requestId];
-        _safeMint(owner, newTokenId);
+        emit breedAssigned(newTokenId, breed); //emit out newtoken id and breed
+        address owner = requestIdToSender[requestId]; //owner address obtained from mapping to be used in minting
+        _safeMint(owner, newTokenId); //since vrf coordinator is calling fulfill randomnesss, need to directly specify owner since owner address not equal to vrf coordinator
         tokenCounter = tokenCounter + 1;
     }
 
